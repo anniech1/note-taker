@@ -59,8 +59,16 @@ app.post('/api/notes', (req, res) => {
     // };
     // const newNote = createNewNote(req.body);
     //     res.json(newNote);
-    const addedNote = req.body;
-    addedNote.id = Date.now();
+    const newNote = req.body;
+    newNote.id = Date.now();
+    var noteData = fs.readFileSync('./db/db.json');
+    var noteTaker = JSON.parse(noteData);
+    noteTaker.push(req.body);
+    fs.writeFileSync('./db/db.json',JSON.stringify(noteTaker), (err, data) => {
+      if (err) throw err;
+      res.json(noteTaker)      
+    });
+    res.sendFile(path.join(__dirname,'public/notes.html'));
 });
 
 
