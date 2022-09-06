@@ -61,16 +61,28 @@ app.post('/api/notes', (req, res) => {
     //     res.json(newNote);
     const newNote = req.body;
     newNote.id = Date.now();
-    var noteData = fs.readFileSync('./db/db.json');
-    var noteTaker = JSON.parse(noteData);
-    noteTaker.push(req.body);
-    fs.writeFileSync('./db/db.json',JSON.stringify(noteTaker), (err, data) => {
+    var noteInfo = fs.readFileSync('./db/db.json');
+    var noteTakerApp = JSON.parse(noteInfo);
+    noteTakerApp.push(req.body);
+    fs.writeFileSync('./db/db.json',JSON.stringify(noteTakerApp), (err, data) => {
       if (err) throw err;
-      res.json(noteTaker)      
+      res.json(noteTakerApp)      
     });
     res.sendFile(path.join(__dirname,'public/notes.html'));
 });
 
+//note delete
+app.delete("/api/notes/:id", (req, res) => {
+  let noteInfo = fs.readFileSync('./db/db.json');
+  let noteTakerApp = JSON.parse(noteInfo);
+  const notesSaved = noteTakerApp.find(n => n.id === parseInt(req.params.id));
+  const listNotes = noteTakerApp.indexOf(notesSaved);
+  noteTakerApp.splice(listNotes);
+ fs.writeFile(__dirname + "/db/db.json", JSON.stringify(noteTakerApp), (err, data) => {
+   if (err) throw err;
+   res.json(noteTakerApp)    
+ }); 
+});
 
 
 //start server
